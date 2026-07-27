@@ -8,11 +8,17 @@ const CURRENCY_SUFFIX: Record<CurrencyCode, string> = {
   EUR: '€',
 };
 
-/** Formats a number with non-breaking thin spaces, e.g. 1 234 567. */
+/**
+ * Narrow no-break space (U+202F) used as the thousands separator: it keeps
+ * grouped digits from wrapping mid-number on narrow phone screens.
+ */
+export const THOUSANDS_SEPARATOR = '\u202F';
+
+/** Formats a number as e.g. 1 234 567, grouped with THOUSANDS_SEPARATOR. */
 export function formatNumber(value: number, fractionDigits = 0): string {
   const rounded = Number(value.toFixed(fractionDigits));
   const [integer, fraction] = rounded.toFixed(fractionDigits).split('.');
-  const grouped = (integer ?? '0').replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const grouped = (integer ?? '0').replace(/\B(?=(\d{3})+(?!\d))/g, THOUSANDS_SEPARATOR);
   return fraction ? `${grouped},${fraction}` : grouped;
 }
 

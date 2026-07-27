@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx --env-file-if-exists=.env.local scripts/seed.ts"
   },
   "repository": {
     "type": "git",
@@ -52,6 +52,7 @@
     "jsdom": "^30.0.0",
     "postcss": "^8.5.23",
     "tailwindcss": "^3.4.19",
+    "tsx": "^4.23.1",
     "typescript": "^6.0.3",
     "vitest": "^4.1.10"
   }
