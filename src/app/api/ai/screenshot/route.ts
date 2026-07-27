@@ -38,10 +38,20 @@ export async function POST(request: Request) {
     const upload = await storeTemporaryUpload(file);
     uploadKey = upload.key;
 
-    const analysis = await getAIProvider().analyzeScreenshot({
+    const provider = getAIProvider();
+    const analysis = await provider.analyzeScreenshot({
       fileName: upload.fileName,
       mimeType: upload.mimeType,
       data: upload.data,
+    });
+
+    await getDataSource().recordAiRequest({
+      telegramId: telegram.id,
+      feature: 'analyzeScreenshot',
+      provider: provider.name,
+      // Only the file type is recorded; the image itself is already deleted.
+      inputSummary: `screenshot (${file.type})`,
+      confidence: analysis.confidence,
     });
 
     await getDataSource().addHistory({

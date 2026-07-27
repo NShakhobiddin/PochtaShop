@@ -1,4 +1,5 @@
 import type {
+  AiLogEntry,
   AppUser,
   AssistedOrderRequest,
   AuditLogEntry,
@@ -38,6 +39,7 @@ interface MemoryState {
   reviews: Review[];
   changeRequests: CourierChangeRequest[];
   auditLog: AuditLogEntry[];
+  aiLog: AiLogEntry[];
 }
 
 /**
@@ -58,6 +60,7 @@ function state(): MemoryState {
       reviews: seedReviews(),
       changeRequests: [],
       auditLog: [],
+      aiLog: [],
     };
   }
   return globalState.__pochtashopState;
@@ -471,6 +474,17 @@ export class MemoryDataSource implements DataSource {
 
   async appendAuditLog(entry: Omit<AuditLogEntry, 'id' | 'createdAt'>): Promise<void> {
     state().auditLog.push({ ...entry, id: uid('audit'), createdAt: nowIso() });
+  }
+
+  async recordAiRequest(entry: Omit<AiLogEntry, 'id' | 'createdAt'>): Promise<void> {
+    const log = state().aiLog;
+    log.push({ ...entry, id: uid('ai'), createdAt: nowIso() });
+    // Bounded in demo mode; Supabase keeps the full history.
+    if (log.length > 200) log.splice(0, log.length - 200);
+  }
+
+  async listAiRequests(): Promise<AiLogEntry[]> {
+    return [...state().aiLog].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
   async ping(): Promise<boolean> {

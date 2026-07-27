@@ -462,6 +462,18 @@ export interface Promotion {
 
 /* ------------------------------------------------------------------- admin */
 
+export interface AiLogEntry {
+  id: string;
+  telegramId: number;
+  feature: string;
+  provider: string;
+  /** Short, non-identifying description of the input. Never the raw payload. */
+  inputSummary: string;
+  confidence?: 'high' | 'medium' | 'low';
+  error?: string;
+  createdAt: string;
+}
+
 export interface AuditLogEntry {
   id: string;
   actor: string;

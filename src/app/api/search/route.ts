@@ -38,7 +38,16 @@ export async function POST(request: Request) {
       }
     }
 
-    const result = await getAIProvider().analyzeProduct({ criteria, telegramId: telegram.id });
+    const provider = getAIProvider();
+    const result = await provider.analyzeProduct({ criteria, telegramId: telegram.id });
+
+    await data.recordAiRequest({
+      telegramId: telegram.id,
+      feature: 'analyzeProduct',
+      provider: provider.name,
+      inputSummary: truncate(criteria.query, 80),
+      confidence: result.confidence,
+    });
 
     await data.addHistory({
       telegramId: telegram.id,

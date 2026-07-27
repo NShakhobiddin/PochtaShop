@@ -1,6 +1,7 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
+  AiLogEntry,
   AppUser,
   AssistedOrderRequest,
   AuditLogEntry,
@@ -667,6 +668,51 @@ export class SupabaseDataSource implements DataSource {
       entity_id: entry.entityId,
       previous_value: entry.previousValue ?? null,
       new_value: entry.newValue ?? null,
+    });
+  }
+
+  async recordAiRequest(entry: Omit<AiLogEntry, 'id' | 'createdAt'>): Promise<void> {
+    const { data } = await this.db
+      .from('ai_requests')
+      .insert({
+        telegram_id: entry.telegramId,
+        feature: entry.feature,
+        provider: entry.provider,
+        input_summary: entry.inputSummary,
+      })
+      .select('id')
+      .single();
+
+    if (data) {
+      await this.db.from('ai_results').insert({
+        request_id: str(data as Row, 'id'),
+        confidence: entry.confidence ?? null,
+        payload: {},
+        error: entry.error ?? null,
+      });
+    }
+  }
+
+  async listAiRequests(): Promise<AiLogEntry[]> {
+    const { data } = await this.db
+      .from('ai_requests')
+      .select('*, ai_results(confidence, error)')
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    return ((data ?? []) as Row[]).map((row) => {
+      const results = Array.isArray(row.ai_results) ? (row.ai_results as Row[]) : [];
+      const first = results[0];
+      return {
+        id: str(row, 'id'),
+        telegramId: num(row, 'telegram_id'),
+        feature: str(row, 'feature'),
+        provider: str(row, 'provider'),
+        inputSummary: str(row, 'input_summary'),
+        confidence: first ? (str(first, 'confidence') as AiLogEntry['confidence']) : undefined,
+        error: first ? str(first, 'error') || undefined : undefined,
+        createdAt: str(row, 'created_at'),
+      };
     });
   }
 

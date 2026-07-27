@@ -1,4 +1,5 @@
 import type {
+  AiLogEntry,
   AppUser,
   AssistedOrderRequest,
   AuditLogEntry,
@@ -113,6 +114,10 @@ export interface DataSource {
     actor: string,
   ): Promise<void>;
   listAuditLog(): Promise<AuditLogEntry[]>;
+
+  /* ai observability */
+  recordAiRequest(entry: Omit<AiLogEntry, 'id' | 'createdAt'>): Promise<void>;
+  listAiRequests(): Promise<AiLogEntry[]>;
   appendAuditLog(entry: Omit<AuditLogEntry, 'id' | 'createdAt'>): Promise<void>;
 
   /* health */
