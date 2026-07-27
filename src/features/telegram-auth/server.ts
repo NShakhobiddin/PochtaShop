@@ -37,13 +37,20 @@ const DEV_USER: TelegramUser = {
 export function resolveTelegramUser(initData: string | null): TelegramUser {
   const env = getServerEnv();
 
+  // Without a bot token, initData signatures cannot be verified at all — so
+  // outside production the only useful behaviour is the demo identity. The
+  // environment validator already refuses to boot production without a token,
+  // and refuses ALLOW_INSECURE_TELEGRAM_AUTH there, so this cannot leak.
+  const devFallbackAllowed =
+    !env.isProduction && (env.ALLOW_INSECURE_TELEGRAM_AUTH || !env.TELEGRAM_BOT_TOKEN);
+
   if (!initData) {
-    if (env.ALLOW_INSECURE_TELEGRAM_AUTH && !env.isProduction) return DEV_USER;
+    if (devFallbackAllowed) return DEV_USER;
     throw new AuthError('missing_init_data');
   }
 
   if (!env.TELEGRAM_BOT_TOKEN) {
-    if (env.ALLOW_INSECURE_TELEGRAM_AUTH && !env.isProduction) return DEV_USER;
+    if (devFallbackAllowed) return DEV_USER;
     throw new AuthError('missing_bot_token', 500);
   }
 

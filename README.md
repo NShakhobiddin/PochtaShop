@@ -82,17 +82,24 @@ The core flow: **O'rgatadi → Topadi → Solishtiradi → Xavfni tushuntiradi �
 
 ```bash
 npm install
-cp .env.example .env.local
 npm run dev
 ```
 
-Open <http://localhost:3000>.
+Open <http://localhost:3000>. No configuration file is required.
 
-Out of the box the app runs **without Supabase and without an AI key**: it uses
+Out of the box the app runs **without Supabase, without an AI key and without a
+Telegram bot token**: it uses
 the bundled demo catalogue and the deterministic mock AI provider, so every
-screen and every calculation works. Set `ALLOW_INSECURE_TELEGRAM_AUTH=true` in
-`.env.local` to browse outside Telegram during development — this flag is
-rejected when `APP_ENV=production`.
+screen and every calculation works in a normal browser.
+
+Telegram `initData` cannot be verified without a bot token, so while
+`TELEGRAM_BOT_TOKEN` is empty a demo identity is used outside production. As
+soon as you set a token, real signature verification applies. Production is
+protected by the environment validator: it refuses to boot without a token, and
+refuses `ALLOW_INSECURE_TELEGRAM_AUTH=true` outright.
+
+Copy `.env.example` to `.env.local` only when you start wiring Supabase, a real
+AI provider or the bot.
 
 Scripts:
 
