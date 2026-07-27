@@ -66,6 +66,14 @@ function state(): MemoryState {
   return globalState.__pochtashopState;
 }
 
+/**
+ * Forces the lazily-created state to exist. The browser demo needs this before
+ * it can merge a persisted snapshot into it.
+ */
+export function ensureMemoryState(): void {
+  state();
+}
+
 function seedReviews(): Review[] {
   return [
     {

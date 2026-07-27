@@ -24,11 +24,31 @@ interface ApiResponseShape {
  * All Mini App requests go through here so the verified Telegram initData is
  * attached to every call — the server trusts nothing else.
  */
+/** True for the GitHub Pages build, where there is no server to call. */
+export const IS_STATIC_DEMO = process.env.NEXT_PUBLIC_STATIC_DEMO === 'true';
+
+async function fetchFromLocalDemo<T>(path: string, method: string, json: unknown): Promise<T> {
+  // Loaded lazily so the shim never enters a server-rendered bundle.
+  const { handleLocalRequest, LocalApiError } = await import('@/lib/static-demo/local-api');
+  try {
+    return (await handleLocalRequest({ path, method, body: json })) as T;
+  } catch (error) {
+    if (error instanceof LocalApiError) {
+      throw new ApiError(error.message, error.status, error.code);
+    }
+    throw new ApiError("So'rov bajarilmadi.", 500);
+  }
+}
+
 export async function apiFetch<T>(
   path: string,
   options: RequestInit & { json?: unknown } = {},
 ): Promise<T> {
   const { json, headers, ...rest } = options;
+
+  if (IS_STATIC_DEMO) {
+    return fetchFromLocalDemo<T>(path, rest.method ?? (json ? 'POST' : 'GET'), json);
+  }
 
   if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     throw new ApiError(OFFLINE_MESSAGE, 0, 'offline');

@@ -19,6 +19,12 @@ import { COUNTRIES, CATEGORY_LABELS } from '@/constants';
 
 export const dynamic = 'force-dynamic';
 
+/** Pre-renders every catalogue product for the static export. */
+export async function generateStaticParams() {
+  const products = await getDataSource().listProducts();
+  return products.map((product) => ({ slug: product.slug }));
+}
+
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const data = getDataSource();

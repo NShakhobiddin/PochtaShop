@@ -19,6 +19,7 @@ import { buildRecommendations } from '@/features/recommendations/engine';
 import { evaluateCustomsRisk } from '@/features/customs-risk/risk';
 import { checkCompatibility } from '@/features/product-search/compatibility';
 import { SELLER_TOPICS, translateTopic } from '@/features/seller-assistant/phrasebook';
+import { analyseSellerReply } from '@/features/seller-assistant/reply-analysis';
 import { sanitizeUserText } from './prompt-guard';
 
 /**
@@ -91,31 +92,7 @@ export class MockAIProvider implements AIProvider {
   }
 
   async translateSellerMessage(input: TranslateSellerMessageInput): Promise<SellerReplyAnalysis> {
-    const { text, injectionDetected } = sanitizeUserText(input.sellerText, 3000);
-    const warnings: string[] = [];
-
-    if (/预售|pre-?order|ön sipariş/i.test(text)) {
-      warnings.push("Sotuvchi oldindan buyurtma (pre-order) haqida yozmoqda — yetkazish kechikadi.");
-    }
-    if (/仿|replica|copy|1:1/i.test(text)) {
-      warnings.push("Javobda nusxa (replica) haqida ishora bor. Original emasligi mumkin.");
-    }
-    if (/no refund|不退|iade yok/i.test(text)) {
-      warnings.push("Sotuvchi qaytarishni qabul qilmasligini yozmoqda.");
-    }
-    if (injectionDetected) {
-      warnings.push("Xabarda tizimga ta'sir qilishga urinish belgilari bor edi, ular olib tashlandi.");
-    }
-
-    return {
-      translated:
-        text.length > 0
-          ? `Sotuvchi xabari (demo tarjima): ${text}`
-          : "Xabar bo'sh.",
-      explanation:
-        "Demo rejimda asl matn saqlanadi va asosiy xavf so'zlari tekshiriladi. To'liq tarjima uchun AI provayderni sozlang.",
-      warnings,
-    };
+    return analyseSellerReply(input.sellerText);
   }
 
   async evaluateCustomsRisk(input: EvaluateCustomsRiskInput): Promise<AIResult> {

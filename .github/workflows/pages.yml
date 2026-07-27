@@ -1,0 +1,71 @@
+name: Deploy demo to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish; queue at most one more.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+
+      - name: Verify
+        run: |
+          npm run typecheck
+          npm run lint
+          npm test
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      - name: Build static demo
+        run: |
+          node scripts/prepare-static.mjs
+          npx next build
+        env:
+          NEXT_PUBLIC_STATIC_DEMO: 'true'
+          # e.g. /PochtaShop for a project site, empty for a user site.
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Deliberately not "production": the export has no server, and the
+          # production validator requires a bot token it would never use.
+          APP_ENV: staging
+          NEXT_TELEMETRY_DISABLED: '1'
+
+      - name: Disable Jekyll processing
+        run: touch out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v4
+        id: deployment

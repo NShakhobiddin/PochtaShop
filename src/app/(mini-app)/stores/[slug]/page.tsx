@@ -11,6 +11,12 @@ import { getDataSource } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
+/** Pre-renders every store for the static export. */
+export async function generateStaticParams() {
+  const stores = await getDataSource().listStores();
+  return stores.map((store) => ({ slug: store.slug }));
+}
+
 export default async function StoreDetailPage({
   params,
 }: {

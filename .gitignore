@@ -13,3 +13,7 @@ test-results/
 .DS_Store
 .vercel
 .env.local
+
+# Static export output and the parked API directory
+out/
+.api-parked/

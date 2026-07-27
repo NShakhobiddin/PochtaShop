@@ -266,7 +266,27 @@ If your environment ships a pre-installed Chromium at a different revision, set
 
 ## Deployment
 
-**Vercel + Supabase**
+### GitHub Pages (live demo)
+
+`.github/workflows/pages.yml` builds a fully static export on every push to
+`main` and publishes it to GitHub Pages. Enable it once under
+**Settings → Pages → Source → GitHub Actions**.
+
+There is no server in that build, so `scripts/prepare-static.mjs` parks the API
+routes and switches the route segments to `force-static`, and `apiFetch` is
+redirected to an in-browser shim
+(`src/lib/static-demo/local-api.ts`). The shim calls the *same* rule engines and
+the same in-memory data source the server uses, so recommendations, customs
+figures and risk levels are identical to a real deployment. Each visitor's saved
+items, history and requests live in their own `localStorage`.
+
+Two features need a server and are unavailable there: the screenshot assistant
+(it says so plainly) and any Supabase-backed shared storage.
+
+The script is exactly reversible — `node scripts/prepare-static.mjs --restore`
+returns the tree to server mode.
+
+### Vercel + Supabase (full app)
 
 1. Import the repository into Vercel.
 2. Add the production environment variables (`APP_ENV=production`,

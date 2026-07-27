@@ -29,7 +29,14 @@ const PRIORITIES: Array<{ value: NonNullable<ProductSearchCriteria['priority']>;
 const COUNTRY_OPTIONS: CountryCode[] = ['CN', 'US', 'TR'];
 
 export function SearchScreen({ initialQuery }: { initialQuery: string }) {
-  const [criteria, setCriteria] = React.useState<ProductSearchCriteria>({ query: initialQuery });
+  // A static export pre-renders without searchParams, so the query is read from
+  // the address bar when the server did not supply one.
+  const [query] = React.useState(() => {
+    if (initialQuery) return initialQuery;
+    if (typeof window === 'undefined') return '';
+    return new URLSearchParams(window.location.search).get('q') ?? '';
+  });
+  const [criteria, setCriteria] = React.useState<ProductSearchCriteria>({ query });
   const [result, setResult] = React.useState<AIResult | null>(null);
   const [status, setStatus] = React.useState<Status>('idle');
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -61,11 +68,11 @@ export function SearchScreen({ initialQuery }: { initialQuery: string }) {
   }, []);
 
   React.useEffect(() => {
-    if (!initialQuery) return;
+    if (!query) return;
     // Deferred to a microtask so the first search does not set state
     // synchronously inside the effect body.
-    void Promise.resolve().then(() => runSearch({ query: initialQuery }));
-  }, [initialQuery, runSearch]);
+    void Promise.resolve().then(() => runSearch({ query }));
+  }, [query, runSearch]);
 
   function update(patch: Partial<ProductSearchCriteria>) {
     setCriteria((current) => ({ ...current, ...patch }));
@@ -106,7 +113,7 @@ export function SearchScreen({ initialQuery }: { initialQuery: string }) {
         }
       />
 
-      <UniversalSearchBar defaultValue={initialQuery} />
+      <UniversalSearchBar defaultValue={query} />
 
       {filtersOpen ? (
         <Card className="space-y-4 p-4">
@@ -225,7 +232,7 @@ export function SearchScreen({ initialQuery }: { initialQuery: string }) {
         />
       ) : null}
 
-      {status === 'idle' && !initialQuery ? (
+      {status === 'idle' && !query ? (
         <EmptyState
           title="Mahsulotni qidiring"
           description="Mahsulot nomini yozing, rasm yuklang yoki do'kon havolasini yuboring."

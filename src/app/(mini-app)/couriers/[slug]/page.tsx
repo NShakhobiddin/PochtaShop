@@ -14,6 +14,12 @@ import { formatDate } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
 
+/** Pre-renders every courier for the static export. */
+export async function generateStaticParams() {
+  const couriers = await getDataSource().listCouriers();
+  return couriers.map((courier) => ({ slug: courier.slug }));
+}
+
 const SERVICE_LABEL = {
   economy: 'Ekonom',
   standard: 'Standart',

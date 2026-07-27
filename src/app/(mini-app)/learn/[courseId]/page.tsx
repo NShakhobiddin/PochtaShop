@@ -4,6 +4,12 @@ import { getDataSource } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
+/** Pre-renders every course for the static export. */
+export async function generateStaticParams() {
+  const courses = await getDataSource().listCourses();
+  return courses.map((course) => ({ courseId: course.id }));
+}
+
 export default async function CoursePage({
   params,
 }: {
