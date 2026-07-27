@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 248 250 252;
+    --surface: 255 255 255;
+    --surface-muted: 244 245 250;
+    --primary: 79 70 229;
+    --primary-dark: 55 48 163;
+    --primary-light: 238 242 255;
+    --secondary: 99 102 241;
+    --text-primary: 17 24 39;
+    --text-secondary: 107 114 128;
+    --border: 229 231 235;
+    --success: 22 163 74;
+    --success-bg: 220 252 231;
+    --warning: 217 119 6;
+    --warning-bg: 254 243 199;
+    --danger: 220 38 38;
+    --danger-bg: 254 226 226;
+
+    --radius-small: 10px;
+    --radius-medium: 16px;
+    --radius-large: 24px;
+
+    --tg-safe-top: env(safe-area-inset-top, 0px);
+    --tg-safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-background text-content font-sans antialiased;
+    /* Telegram Mini Apps are viewport-locked; the app scrolls its own panes. */
+    overscroll-behavior-y: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-md bg-surface shadow-card;
+  }
+
+  .safe-top {
+    padding-top: calc(var(--tg-safe-top) + 12px);
+  }
+
+  .safe-bottom {
+    padding-bottom: calc(var(--tg-safe-bottom) + 12px);
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-sm bg-surface-muted;
+  }
+
+  .scroll-x {
+    @apply overflow-x-auto;
+    scrollbar-width: none;
+  }
+
+  .scroll-x::-webkit-scrollbar {
+    display: none;
+  }
+}

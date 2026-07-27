@@ -1,0 +1,130 @@
+import type { Promotion, RestrictedGood } from '@/types';
+
+const SOURCE =
+  "Bojxona qoidalari bo'yicha demo ma'lumot bazasi. Rasmiy manba: bojxona organi rasmiy portali.";
+const UPDATED = '2026-05-01';
+
+export const SEED_RESTRICTED_GOODS: RestrictedGood[] = [
+  {
+    id: 'rg_narcotics',
+    name: 'Giyohvandlik vositalari va psixotrop moddalar',
+    keywords: ['narcotic', 'giyohvand', 'psixotrop'],
+    status: 'prohibited',
+    reason: "Olib kirish qat'iyan taqiqlangan.",
+    requiredDocuments: [],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+  {
+    id: 'rg_weapons',
+    name: "Qurol, o'q-dori va ularning qismlari",
+    keywords: ['gun', 'qurol', 'pistolet', 'ammo', "o'q", 'knife', 'pichoq', 'taser', 'shoker'],
+    status: 'prohibited',
+    reason: "Maxsus ruxsatsiz olib kirish taqiqlangan.",
+    requiredDocuments: [],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+  {
+    id: 'rg_medicine',
+    name: 'Dori vositalari va biologik faol qo‘shimchalar',
+    keywords: ['dori', 'medicine', 'tablet', 'bad', 'supplement', 'vitamin', 'injection'],
+    status: 'restricted',
+    reason:
+      "Ba'zi dorilar retsept va sog'liqni saqlash organining ruxsatini talab qiladi.",
+    requiredDocuments: ['Shifokor retsepti', 'Tarkib haqidagi hujjat'],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+  {
+    id: 'rg_drone',
+    name: 'Dronlar va uchuvchi qurilmalar',
+    keywords: ['drone', 'dron', 'quadcopter', 'kvadrokopter', 'fpv'],
+    status: 'restricted',
+    reason: "Ro'yxatdan o'tkazish va maxsus ruxsat talab qilinishi mumkin.",
+    requiredDocuments: ["Ro'yxatdan o'tkazish arizasi", 'Texnik xususiyatlar hujjati'],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+  {
+    id: 'rg_radio',
+    name: 'Radioaloqa va signal uzatuvchi qurilmalar',
+    keywords: ['radio', 'ratsiya', 'walkie', 'jammer', 'signal booster', 'repeater'],
+    status: 'restricted',
+    reason: "Chastota diapazoni bo'yicha aloqa sohasidagi ruxsat kerak bo'lishi mumkin.",
+    requiredDocuments: ['Chastota sertifikati'],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+  {
+    id: 'rg_battery',
+    name: 'Litiy-ion batareyalar va power bank',
+    keywords: ['batareya', 'battery', 'powerbank', 'power bank', 'akkumulyator', 'li-ion'],
+    status: 'restricted',
+    reason:
+      "Aviatashuvda cheklangan. Kuryer sig'imga (Wh) qarab qabul qilmasligi mumkin.",
+    requiredDocuments: ['MSDS xavfsizlik varaqasi (kuryer so‘rasa)'],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+  {
+    id: 'rg_liquid',
+    name: 'Suyuqliklar, parfyumeriya va aerozollar',
+    keywords: ['parfum', 'atir', 'aerozol', 'spray', 'suyuqlik', 'perfume', 'alcohol'],
+    status: 'restricted',
+    reason: "Yonuvchan suyuqliklar aviatashuvda cheklanadi.",
+    requiredDocuments: ['Tarkib haqidagi hujjat'],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+  {
+    id: 'rg_food',
+    name: 'Oziq-ovqat va hayvon mahsulotlari',
+    keywords: ['food', 'oziq', 'go‘sht', 'meat', 'sut', 'dairy', 'seed', 'urug'],
+    status: 'restricted',
+    reason: "Veterinariya yoki fitosanitariya nazorati talab qilinadi.",
+    requiredDocuments: ['Veterinariya sertifikati', 'Fitosanitariya sertifikati'],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+  {
+    id: 'rg_counterfeit',
+    name: 'Kontrafakt va brend nusxalari',
+    keywords: ['replica', 'nusxa', 'kopiya', 'fake', 'aaa quality', 'copy'],
+    status: 'prohibited',
+    reason: "Intellektual mulk huquqini buzuvchi tovarlar olib kirilmaydi.",
+    requiredDocuments: [],
+    legalSource: SOURCE,
+    updatedAt: UPDATED,
+  },
+];
+
+export const SEED_PROMOTIONS: Promotion[] = [
+  {
+    id: 'promo_orient',
+    title: 'Orient Express — birinchi jo‘natmaga 10% chegirma',
+    body: "Yangi mijozlar uchun aksiya. Aksiya kuryerning reytingiga ta'sir qilmaydi.",
+    targetType: 'courier',
+    targetId: 'courier_orient_express',
+    label: 'ad',
+    activeUntil: '2026-12-31',
+  },
+  {
+    id: 'promo_tmall',
+    title: 'Tmall Global — rasmiy do‘konlar haftaligi',
+    body: "Rasmiy do'konlarda original tovar ehtimoli yuqoriroq.",
+    targetType: 'store',
+    targetId: 'store_tmall',
+    label: 'partnership',
+    activeUntil: '2026-12-31',
+  },
+  {
+    id: 'promo_headphones',
+    title: 'Baseus Bowie H1i — haftaning taklifi',
+    body: "Bir necha do'konda narx tushgan. Taqqoslashni oching.",
+    targetType: 'product',
+    targetId: 'product_headphones',
+    label: 'users_choice',
+    activeUntil: '2026-12-31',
+  },
+];
