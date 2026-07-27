@@ -21,15 +21,8 @@ const fetchContinue = () => apiFetch<ContinuePayload | null>('/api/learning/cont
 export function ContinueLearningCard() {
   const { data: payload, status } = useAsyncData<ContinuePayload | null>(fetchContinue);
 
-  if (status === 'loading') {
-    return (
-      <section aria-label="Davom ettirish">
-        <SectionHeader title="Davom ettirish" />
-        <div className="skeleton h-[92px] w-full rounded-md" />
-      </section>
-    );
-  }
-
+  // Most users have no lesson in progress, so nothing is rendered until we know
+  // there is one — a skeleton here would show an empty box that then vanishes.
   if (status !== 'ready' || !payload) return null;
 
   return (
