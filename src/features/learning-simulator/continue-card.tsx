@@ -6,6 +6,7 @@ import { Play } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Progress, SectionHeader } from '@/components/ui/misc';
 import { apiFetch } from '@/lib/api/client';
+import { useAsyncData } from '@/hooks/use-async-data';
 import type { LearningCourse, LearningProgress } from '@/types';
 
 interface ContinuePayload {
@@ -15,28 +16,12 @@ interface ContinuePayload {
   percent: number;
 }
 
+const fetchContinue = () => apiFetch<ContinuePayload | null>('/api/learning/continue');
+
 export function ContinueLearningCard() {
-  const [payload, setPayload] = React.useState<ContinuePayload | null>(null);
-  const [loading, setLoading] = React.useState(true);
+  const { data: payload, status } = useAsyncData<ContinuePayload | null>(fetchContinue);
 
-  React.useEffect(() => {
-    let cancelled = false;
-    apiFetch<ContinuePayload | null>('/api/learning/continue')
-      .then((result) => {
-        if (!cancelled) setPayload(result);
-      })
-      .catch(() => {
-        if (!cancelled) setPayload(null);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  if (loading) {
+  if (status === 'loading') {
     return (
       <section aria-label="Davom ettirish">
         <SectionHeader title="Davom ettirish" />
@@ -45,7 +30,7 @@ export function ContinueLearningCard() {
     );
   }
 
-  if (!payload) return null;
+  if (status !== 'ready' || !payload) return null;
 
   return (
     <section aria-label="Davom ettirish">
